@@ -46,10 +46,10 @@ activities <- read.table('activity_labels.txt',
                        col.names = c("id", "raw_name"),
                        colClasses = c("integer", "character"))
 message("Building user friendly activity names...")
-activities$name <- activities$raw_name
-activities$name <- tolower(activities$name)
-activities$name <- gsub("_", " ", activities$name)
-activities$name <- paste0(toupper(substr(activities$name, 1, 1)), substr(activities$name, 2, nchar(activities$name)))
+activities$activity <- activities$raw_name
+activities$activity <- tolower(activities$activity)
+activities$activity <- gsub("_", " ", activities$activity)
+activities$activity <- paste0(toupper(substr(activities$activity, 1, 1)), substr(activities$activity, 2, nchar(activities$activity)))
 ## activities
 
 message("Reading in the test data sets")
@@ -58,8 +58,13 @@ test.subjects <- read.table("test/subject_test.txt", col.names = c("subject"))
 message("\t\t found ", nrow(test.subjects), " subject variables")
 
 message("\t Read in activities...")
-test.activities <- read.table("test/y_test.txt", col.names = c("activity"))
+test.activities <- read.table("test/y_test.txt", col.names = c("id"))
 message("\t\t found ", nrow(test.activities), " activity variables")
+message("\t\t merge activities codes with activity lables")
+test.activities <- merge(x = test.activities, y = activities)
+# loose the extra field
+test.activities <- select(test.activities, activity)
+message("\t\t left with ", nrow(test.activities), " activity variables after merging with activity lables")
 
 message("\t Read in data variables. This may take a long time...")
 test.data <- read.table(file = "test/X_test.txt")
@@ -75,8 +80,13 @@ train.subjects <- read.table("train/subject_train.txt", col.names = c("subject")
 message("\t\t found ", nrow(train.subjects), " subject variables")
 
 message("\t Read in activities...")
-train.activities <- read.table("train/y_train.txt", col.names = c("activity"))
+train.activities <- read.table("train/y_train.txt", col.names = c("id"))
 message("\t\t found ", nrow(train.activities), " activity variables")
+message("\t\t merge activities codes with activity lables")
+train.activities <- merge(x = train.activities, y = activities)
+# loose the extra field
+train.activities <- select(train.activities, activity)
+message("\t\t left with ", nrow(train.activities), " activity variables after merging with activity lables")
 
 message("\t Read in data variables. This may take a long time...")
 train.data <- read.table(file = "train/X_train.txt")
